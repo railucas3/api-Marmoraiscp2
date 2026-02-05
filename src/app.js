@@ -14,6 +14,14 @@ app.use(express.json())
 app.use(cors())
 app.use(helmet())
 
+app.get('/', (req, res) => {
+  res.json({
+    status: 'online',
+    app: 'Marmoraria API',
+    version: '1.0.0',
+  })
+})
+
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' })
 })

@@ -51,6 +51,23 @@ async function createTables() {
       global_block BOOLEAN NOT NULL DEFAULT FALSE,
       reason TEXT
     );`,
+    `CREATE TABLE IF NOT EXISTS subscriptions (
+      id SERIAL PRIMARY KEY,
+      marmoraria_id INTEGER REFERENCES marmorarias(id) ON DELETE CASCADE,
+      plano_id INTEGER REFERENCES planos(id),
+      status TEXT NOT NULL CHECK (status IN ('ACTIVE','EXPIRED','CANCELED')),
+      started_at TIMESTAMP NOT NULL DEFAULT NOW(),
+      expires_at TIMESTAMP NOT NULL
+    );`,
+    `CREATE TABLE IF NOT EXISTS payments (
+      id SERIAL PRIMARY KEY,
+      subscription_id INTEGER REFERENCES subscriptions(id),
+      amount NUMERIC(12,2),
+      method TEXT,
+      status TEXT,
+      transaction_id TEXT,
+      created_at TIMESTAMP NOT NULL DEFAULT NOW()
+    );`,
   ]
   for (const sql of statements) {
     await pool.query(sql)

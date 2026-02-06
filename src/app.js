@@ -7,6 +7,9 @@ import adminRoutes from './routes/admin.routes.js'
 import marmoriaRoutes from './routes/marmoria.routes.js'
 import planosRoutes from './routes/planos.routes.js'
 import cuponsRoutes from './routes/cupons.routes.js'
+import subscriptionRoutes from './routes/subscription.routes.js'
+import subscriptionGuard from './middlewares/subscriptionGuard.js'
+import pool from './db.js'
 
 const app = express()
 
@@ -22,14 +25,23 @@ app.get('/', (req, res) => {
   })
 })
 
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' })
+app.get('/health', async (req, res) => {
+  let dbOk = false
+  let subOk = false
+  try {
+    await pool.query('SELECT 1')
+    dbOk = true
+    await pool.query('SELECT 1 FROM subscriptions LIMIT 1')
+    subOk = true
+  } catch {
+  }
+  res.json({ status: 'ok', db: dbOk ? 'ok' : 'error', subscriptions: subOk ? 'ok' : 'error' })
 })
 
 app.use('/auth', authRoutes)
 app.use('/admin', adminRoutes)
-app.use('/marmoria', marmoriaRoutes)
-app.use('/planos', planosRoutes)
-app.use('/cupons', cuponsRoutes)
-
+app.use('/marmoria', subscriptionGuard, marmoriaRoutes)
+app.use('/planos', subscriptionGuard, planosRoutes)
+app.use('/cupons', subscriptionGuard, cuponsRoutes)
+app.use('/subscriptions', subscriptionRoutes)
 export default app

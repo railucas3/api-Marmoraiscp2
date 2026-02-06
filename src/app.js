@@ -1,12 +1,12 @@
-const express = require('express')
-const cors = require('cors')
-const helmet = require('helmet')
+import express from 'express'
+import cors from 'cors'
+import helmet from 'helmet'
 
-const authRoutes = require('./routes/auth.routes')
-const adminRoutes = require('./routes/admin.routes')
-const marmoriaRoutes = require('./routes/marmoria.routes')
-const planosRoutes = require('./routes/planos.routes')
-const cuponsRoutes = require('./routes/cupons.routes')
+import authRoutes from './routes/auth.routes.js'
+import adminRoutes from './routes/admin.routes.js'
+import marmoriaRoutes from './routes/marmoria.routes.js'
+import planosRoutes from './routes/planos.routes.js'
+import cuponsRoutes from './routes/cupons.routes.js'
 
 const app = express()
 
@@ -32,4 +32,4 @@ app.use('/marmoria', marmoriaRoutes)
 app.use('/planos', planosRoutes)
 app.use('/cupons', cuponsRoutes)
 
-module.exports = app
+export default app

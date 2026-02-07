@@ -29,11 +29,13 @@ router.post('/create', async (req, res) => {
       return res.status(503).json({ error: 'DB_NOT_CONFIGURED' })
     }
     const { marmorariaId, planoId, months } = req.body || {}
-    if (!marmorariaId || !planoId) {
+    const mId = marmorariaId ?? req.headers['x-marmoraria-id']
+    console.log('[POST /subscriptions/create]', { marmorariaId: mId, planoId, months })
+    if (!mId || !planoId) {
       return res.status(400).json({ error: 'MARMORARIA_OR_PLAN_REQUIRED' })
     }
     const created = await createSubscription(
-      Number(marmorariaId),
+      Number(mId),
       Number(planoId),
       Number(months || 1)
     )

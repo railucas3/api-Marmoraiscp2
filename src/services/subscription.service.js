@@ -106,6 +106,3 @@ export async function renewActive(marmorariaId, months) {
   )
   return updatedRows[0]
 }
-  )
-  return updatedRows[0]
-}

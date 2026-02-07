@@ -78,6 +78,7 @@ async function createTables() {
   for (const sql of statements) {
     await pool.query(sql)
   }
+  await pool.query(`ALTER TABLE marmorarias ADD COLUMN IF NOT EXISTS email TEXT`)
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW()`)
   console.log('[DB] Tabelas criadas/garantidas com sucesso.')
 }

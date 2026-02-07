@@ -4,6 +4,9 @@ import {
   createSubscription,
   renewActive,
   isDbConfigured,
+  validateSubscriptionsSchema,
+  existsMarmoraria,
+  existsPlano,
 } from '../services/subscription.service.js'
 
 const router = Router()
@@ -34,13 +37,29 @@ router.post('/create', async (req, res) => {
     if (!mId || !planoId) {
       return res.status(400).json({ error: 'MARMORARIA_OR_PLAN_REQUIRED' })
     }
+    const monthsNum = Number(months || 1)
+    if (!Number.isFinite(monthsNum) || monthsNum <= 0) {
+      return res.status(400).json({ error: 'MONTHS_INVALID' })
+    }
+    await validateSubscriptionsSchema()
+    const [hasM, hasP] = await Promise.all([
+      existsMarmoraria(Number(mId)),
+      existsPlano(Number(planoId)),
+    ])
+    if (!hasM) {
+      return res.status(400).json({ error: 'MARMORARIA_NOT_FOUND' })
+    }
+    if (!hasP) {
+      return res.status(400).json({ error: 'PLANO_NOT_FOUND' })
+    }
     const created = await createSubscription(
       Number(mId),
       Number(planoId),
-      Number(months || 1)
+      monthsNum
     )
     res.status(201).json(created)
-  } catch {
+  } catch (err) {
+    console.error('[POST /subscriptions/create] failed:', err?.message, err?.stack)
     res.status(500).json({ error: 'SUBSCRIPTIONS_CREATE_FAILED' })
   }
 })

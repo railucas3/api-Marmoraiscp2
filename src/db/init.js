@@ -22,6 +22,7 @@ async function createTables() {
     `CREATE TABLE IF NOT EXISTS marmorarias (
       id SERIAL PRIMARY KEY,
       nome TEXT NOT NULL,
+      email TEXT,
       logo_url TEXT,
       status TEXT NOT NULL CHECK (status IN ('ACTIVE','BLOCKED','MAINTENANCE')),
       created_at TIMESTAMP NOT NULL DEFAULT NOW()
@@ -29,10 +30,15 @@ async function createTables() {
     `CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
       email TEXT NOT NULL UNIQUE,
-      password_hash TEXT,
+      password_hash TEXT NOT NULL,
       google_id TEXT UNIQUE,
       marmoraria_id INTEGER REFERENCES marmorarias(id) ON DELETE SET NULL,
       role TEXT NOT NULL CHECK (role IN ('ADMIN','USER'))
+    );`,
+    `CREATE TABLE IF NOT EXISTS user_marmoraria (
+      user_id INTEGER REFERENCES users(id),
+      marmoraria_id INTEGER REFERENCES marmorarias(id),
+      PRIMARY KEY (user_id, marmoraria_id)
     );`,
     `CREATE TABLE IF NOT EXISTS planos (
       id SERIAL PRIMARY KEY,
@@ -72,6 +78,7 @@ async function createTables() {
   for (const sql of statements) {
     await pool.query(sql)
   }
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT NOW()`)
   console.log('[DB] Tabelas criadas/garantidas com sucesso.')
 }
 

@@ -33,7 +33,7 @@ async function createTables() {
       password_hash TEXT NOT NULL,
       google_id TEXT UNIQUE,
       marmoraria_id INTEGER REFERENCES marmorarias(id) ON DELETE SET NULL,
-      role TEXT NOT NULL CHECK (role IN ('ADMIN','USER'))
+      role TEXT NOT NULL CHECK (role IN ('SUPER_ADMIN','USER'))
     );`,
     `CREATE TABLE IF NOT EXISTS user_marmoraria (
       user_id INTEGER REFERENCES users(id),

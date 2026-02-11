@@ -11,15 +11,15 @@ export async function register(req, res) {
     const passwordHash = await bcrypt.hash(String(password), 10)
     await pool.query('BEGIN')
     const { rows: marmRows } = await pool.query(
-      `INSERT INTO marmorarias (nome, email) VALUES ($1, $2) RETURNING id`,
-      [nomeMarmoraria, email]
+      `INSERT INTO marmorarias (nome, email, status) VALUES ($1, $2, $3) RETURNING id`,
+      [nomeMarmoraria, email, 'ACTIVE']
     )
     const marmorariaId = marmRows[0].id
     const { rows: userRows } = await pool.query(
-      `INSERT INTO users (email, password_hash, created_at, marmoraria_id, role)
-       VALUES ($1, $2, NOW(), $3, $4)
+      `INSERT INTO users (email, password_hash, marmoraria_id, role)
+       VALUES ($1, $2, $3, $4)
        RETURNING id`,
-      [email, passwordHash, marmorariaId, 'ADMIN']
+      [email, passwordHash, marmorariaId, 'USER']
     )
     const userId = userRows[0].id
     await pool.query(
@@ -65,7 +65,7 @@ export async function login(req, res) {
       mId = linkRows[0]?.marmoraria_id || null
     }
     const token = jwt.sign(
-      { sub: user.id, email: user.email, marmorariaId: mId },
+      { sub: user.id, email: user.email, marmorariaId: mId, role: user.role },
       secret,
       { expiresIn: '7d' }
     )

@@ -1,5 +1,7 @@
 import 'dotenv/config'
 // v1.0.1 - Auth & Schema Fix
+import 'dotenv/config'
+// v1.0.2 - Auth & Subscription System
 import app from './app.js'
 import initDb from './db/init.js'
 import { expireOldSubscriptions } from './services/subscription.service.js'

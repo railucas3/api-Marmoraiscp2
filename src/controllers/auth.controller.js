@@ -65,7 +65,12 @@ export async function login(req, res) {
       mId = linkRows[0]?.marmoraria_id || null
     }
     const token = jwt.sign(
-      { sub: user.id, email: user.email, marmorariaId: mId, role: user.role },
+      { 
+        userId: user.id, 
+        email: user.email, 
+        role: user.role, 
+        marmorariaId: mId 
+      },
       secret,
       { expiresIn: '7d' }
     )

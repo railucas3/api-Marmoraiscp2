@@ -33,3 +33,31 @@ export async function listMarmorarias(req, res) {
     res.status(500).json({ error: 'Erro ao listar marmorarias' })
   }
 }
+
+export async function blockMarmoraria(req, res) {
+  try {
+    const { id } = req.params
+    await pool.query(
+      `UPDATE marmorarias SET status = 'BLOCKED' WHERE id = $1`,
+      [id]
+    )
+    res.json({ message: 'Marmoraria bloqueada com sucesso' })
+  } catch (err) {
+    console.error('[ADMIN] Erro ao bloquear marmoraria:', err)
+    res.status(500).json({ error: 'Erro ao bloquear marmoraria' })
+  }
+}
+
+export async function unblockMarmoraria(req, res) {
+  try {
+    const { id } = req.params
+    await pool.query(
+      `UPDATE marmorarias SET status = 'ACTIVE' WHERE id = $1`,
+      [id]
+    )
+    res.json({ message: 'Marmoraria desbloqueada com sucesso' })
+  } catch (err) {
+    console.error('[ADMIN] Erro ao desbloquear marmoraria:', err)
+    res.status(500).json({ error: 'Erro ao desbloquear marmoraria' })
+  }
+}

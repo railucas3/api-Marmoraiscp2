@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { authenticateToken, isSuperAdmin } from '../middlewares/auth.middleware.js'
-import { listMarmorarias } from '../controllers/admin.controller.js'
+import { listMarmorarias, blockMarmoraria, unblockMarmoraria } from '../controllers/admin.controller.js'
 
 const router = Router()
 
@@ -16,5 +16,7 @@ router.get('/test', (req, res) => {
 })
 
 router.get('/marmorarias', listMarmorarias)
+router.patch('/marmorarias/:id/block', blockMarmoraria)
+router.patch('/marmorarias/:id/unblock', unblockMarmoraria)
 
 export default router

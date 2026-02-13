@@ -9,6 +9,7 @@ import planosRoutes from './routes/planos.routes.js'
 import cuponsRoutes from './routes/cupons.routes.js'
 import subscriptionRoutes from './routes/subscription.routes.js'
 import subscriptionGuard from './middlewares/subscriptionGuard.js'
+import { authenticateToken, checkMarmorariaStatus } from './middlewares/auth.middleware.js'
 import pool from './db.js'
 
 const app = express()
@@ -40,8 +41,12 @@ app.get('/health', async (req, res) => {
 
 app.use('/auth', authRoutes)
 app.use('/admin', adminRoutes)
-app.use('/marmoria', subscriptionGuard, marmoriaRoutes)
-app.use('/planos', subscriptionGuard, planosRoutes)
-app.use('/cupons', subscriptionGuard, cuponsRoutes)
+
+// Rotas protegidas (autenticação + verificação de bloqueio + verificação de assinatura)
+const protectedRoutes = [authenticateToken, checkMarmorariaStatus, subscriptionGuard]
+
+app.use('/marmoria', ...protectedRoutes, marmoriaRoutes)
+app.use('/planos', ...protectedRoutes, planosRoutes)
+app.use('/cupons', ...protectedRoutes, cuponsRoutes)
 app.use('/subscriptions', subscriptionRoutes)
 export default app
